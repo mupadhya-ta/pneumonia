@@ -6,7 +6,9 @@ from PIL import Image
 import tensorflow as tf
 
 app = Flask(__name__)
-
+@app.route("/")
+def home():
+    return render_template('home.html')
 
 @app.route("/pneumonia", methods=['GET', 'POST'])
 def pneumoniaPage():
@@ -15,6 +17,7 @@ def pneumoniaPage():
 
 @app.route("/pneumoniapredict", methods = ['POST', 'GET'])
 def pneumoniapredictPage():
+    pred=None
     if request.method == 'POST':
         try:
             img = Image.open(request.files['image']).convert('L')
@@ -27,9 +30,12 @@ def pneumoniapredictPage():
 
             model = tf.keras.models.load_model("models/pneumonia.h5")
             pred = np.argmax(model.predict(img))
+            return render_template('predict.html', pred=pred) 
         except:
             message = "Please upload an image"
-            return render_template('pneumonia.html', message=message)
+            
+            return render_template('pneumonia_predict.html', message=message)
+
     return render_template('pneumonia_predict.html', pred=pred)
 
 if __name__ == '__main__':
