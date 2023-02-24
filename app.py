@@ -1,4 +1,5 @@
 import os
+from flask_cors import CORS
 from flask import Flask, render_template, request
 import pickle
 import numpy as np
@@ -6,7 +7,8 @@ from PIL import Image
 import tflite as tf
 
 app = Flask(__name__)
-@app.route("/")
+CORS(app)
+@app.route("/pneumoniahome")
 def home():
     return render_template('home.html')
 
