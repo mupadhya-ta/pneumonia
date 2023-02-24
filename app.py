@@ -32,13 +32,13 @@ def pneumoniapredictPage():
 
             model = tf.keras.models.load_model("models/pneumonia.h5")
             pred = np.argmax(model.predict(img))
-            return render_template('predict.html', pred=pred) 
+            rendered_page= render_template('predict.html', pred=pred) 
         except:
             message = "Please upload an image"
             
-            return render_template('pneumonia_predict.html', message=message)
+            rendered_page= render_template('pneumonia_predict.html', message=message)
 
-    return render_template('pneumonia_predict.html', pred=pred)
+    return rendered_page;
 
 if __name__ == '__main__':
     app.run(debug = True)
