@@ -19,26 +19,26 @@ def pneumoniaPage():
 
 @app.route("/pneumoniapredict", methods = ['POST', 'GET'])
 def pneumoniapredictPage():
-    pred=None
-    if request.method == 'POST':
-        try:
-            img = Image.open(request.files['image']).convert('L')
-            img.save("uploads/image.jpg")
-            img_path = os.path.join(os.path.dirname(__file__), 'uploads/image.jpg')
-            os.path.isfile(img_path)
-            img = tf.keras.utils.load_img(img_path, target_size=(128, 128))
+   
+            file = request.files['image']
+    
+            # Save the file to disk
+            filename = secure_filename(file.filename)
+            file_path = os.path.join('uploads', filename)
+            file.save(file_path)
+        
+            
+            img = tf.keras.utils.load_img(file_path, target_size=(128, 128))
             img = tf.keras.utils.img_to_array(img)
             img = np.expand_dims(img, axis=0)
 
-            model = tf.keras.models.load_model("models/pneumonia.h5")
-            pred = np.argmax(model.predict(img))
-            rendered_page= render_template('predict.html', pred=pred) 
-        except:
-            message = "Please upload an image"
-            
-            rendered_page= render_template('pneumonia_predict.html', message=message)
-
-    return rendered_page;
+            model = tf.keras.models.load_model("models\pneumonia.h5")
+            prediction = model.predict(img)
+            predicted_label = np.argmax(prediction)
+            class_names={0: 'NORMAL', 1: 'PNEUMONIA'}
+            predicted_class = class_names[predicted_label]
+            rendered_page= render_template('predict.html', pred=predicted_label) 
+            return rendered_page
 
 if __name__ == '__main__':
     app.run(debug = True)
